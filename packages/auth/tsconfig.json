@@ -1,0 +1,6 @@
+{
+  "extends": "@bot/tsconfig/library.json",
+  "include": [
+    "src/**/*"
+  ]
+}

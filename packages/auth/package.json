@@ -1,0 +1,18 @@
+{
+  "name": "@bot/auth",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "devDependencies": {
+    "@bot/prettier": "workspace:*",
+    "@bot/eslint-config": "workspace:*",
+    "@bot/tsconfig": "workspace:*"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@bot/eslint-config/library"
+    ]
+  },
+  "prettier": "@bot/prettier"
+}

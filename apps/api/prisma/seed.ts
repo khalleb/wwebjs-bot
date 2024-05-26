@@ -1,12 +1,12 @@
-import { PrismaClient } from '@prisma/client'
-import { hash } from 'bcryptjs'
+import { PrismaClient } from '@prisma/client';
+import { hash } from 'bcryptjs';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function seed() {
-  await prisma.user.deleteMany()
+  await prisma.user.deleteMany();
 
-  const passwordHash = await hash('admin-goiabada', 6)
+  const passwordHash = await hash('admin-goiabada', 6);
 
   await prisma.user.create({
     data: {
@@ -14,10 +14,9 @@ async function seed() {
       email: 'admin@admin.com',
       password: passwordHash,
     },
-  })
-
+  });
 }
 
 seed().then(() => {
-  console.log('Database seeded!')
-})
+  console.log('Database seeded!');
+});

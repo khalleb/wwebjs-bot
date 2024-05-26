@@ -1,68 +1,88 @@
+import { env } from '@bot/env';
 import fastifyCors from '@fastify/cors';
-import fastifyJwt from '@fastify/jwt'
-import fastify from 'fastify'
-import { env } from '@bot/env'
+import fastifyJwt from '@fastify/jwt';
 import fastifySwagger from '@fastify/swagger';
-import fastifySwaggerUI from '@fastify/swagger-ui'
+import fastifySwaggerUI from '@fastify/swagger-ui';
+import fastify, { FastifyInstance } from 'fastify';
 import {
   jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
   ZodTypeProvider,
-} from 'fastify-type-provider-zod'
+} from 'fastify-type-provider-zod';
 
-import { createAccount } from './routes/auth/create-account'
-import { authenticateWithPassword } from './routes/auth/authenticate-with-password';
 import { errorHandler } from './error-handler';
+import { authenticateWithPassword } from './routes/auth/authenticate-with-password';
+import { createAccount } from './routes/auth/create-account';
 import { requestPasswordRecover } from './routes/auth/request-password-recover';
 import { resetPassword } from './routes/auth/reset-password';
 
-const app = fastify().withTypeProvider<ZodTypeProvider>()
+class Server {
+  public app: FastifyInstance;
 
-app.setSerializerCompiler(serializerCompiler)
-app.setValidatorCompiler(validatorCompiler)
+  constructor() {
+    this.app = fastify().withTypeProvider<ZodTypeProvider>();
 
-app.setErrorHandler(errorHandler)
+    this.app.setSerializerCompiler(serializerCompiler);
+    this.app.setValidatorCompiler(validatorCompiler);
 
-app.register(fastifySwagger, {
-  openapi: {
-    info: {
-      title: 'WhatsApp Bot',
-      description: 'Service WhatsApp Bot',
-      version: '1.0.0',
-    },
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
+    this.app.setErrorHandler(errorHandler);
+
+    this.registerSwagger();
+
+    this.registers();
+  }
+
+  private registerSwagger() {
+    this.app.register(fastifySwagger, {
+      openapi: {
+        info: {
+          title: 'WhatsApp Bot',
+          description: 'Service WhatsApp Bot',
+          version: '1.0.0',
+        },
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: 'http',
+              scheme: 'bearer',
+              bearerFormat: 'JWT',
+            },
+          },
         },
       },
-    },
-  },
-  transform: jsonSchemaTransform,
-})
+      transform: jsonSchemaTransform,
+    });
 
-app.register(fastifySwaggerUI, {
-  routePrefix: '/docs',
-})
+    this.app.register(fastifySwaggerUI, {
+      routePrefix: '/docs',
+    });
+  }
 
-app.register(fastifyJwt, {
-  secret: env.JWT_SECRET,
-})
+  private registers() {
+    this.app.register(fastifyJwt, {
+      secret: env.JWT_SECRET,
+    });
 
+    this.app.register(fastifyCors);
 
-app.register(fastifyCors)
+    this.app.register(createAccount);
+    this.app.register(authenticateWithPassword);
+    this.app.register(requestPasswordRecover);
+    this.app.register(resetPassword);
+  }
 
-app.register(createAccount)
-app.register(authenticateWithPassword)
-app.register(requestPasswordRecover)
-app.register(resetPassword)
+  public async start() {
+    this.app
+      .listen({ port: env.SERVER_PORT })
+      .then(() => {
+        console.log('HTTP server running!');
+      })
+      .catch((error) => {
+        console.log(error);
+        process.exit(1);
+      });
+  }
+}
 
-
-
-
-app.listen({ port: 3333 }).then(() => {
-  console.log('HTTP server running!')
-})
+export const server = new Server();

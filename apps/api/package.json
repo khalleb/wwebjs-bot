@@ -8,7 +8,6 @@
     "env:load": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@bot/auth": "workspace:*",
     "@bot/env": "workspace:*",
     "@fastify/cors": "^9.0.1",
     "@fastify/jwt": "^8.0.1",

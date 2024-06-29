@@ -11,3 +11,21 @@ https://github.com/huan5678/fastify-socket/blob/main/src/utils/logger.ts
 https://github.com/balcieren/fastify-socket.io-plugin/blob/master/test/index.test.ts
 https://github.com/ducktors/fastify-socket.io/blob/master/src/index.ts
 https://github.com/ahmadxgani/fasock-backend/blob/main/src/server.ts
+
+
+instalando postgres
+docker-compose up -d
+
+iniciando prisma
+apps/api
+pnpm prisma generate
+
+criando as tabelas
+pnpm run db:migrate
+
+populando as tabelas
+pnpm run db:seed
+
+
+
+pnpm prisma db seed

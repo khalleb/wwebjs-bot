@@ -5,6 +5,7 @@
     "dev": "pnpm env:load tsx watch index.ts",
     "db:migrate": "pnpm env:load prisma migrate dev",
     "db:studio": "pnpm env:load prisma studio",
+    "db:seed": "pnpm env:load prisma db seed",
     "env:load": "dotenv -e ../../.env --"
   },
   "dependencies": {
@@ -12,13 +13,16 @@
     "@fastify/cors": "^9.0.1",
     "@fastify/jwt": "^8.0.1",
     "@fastify/swagger": "^8.14.0",
-    "@fastify/swagger-ui": "^3.0.0",
-    "@prisma/client": "^5.14.0",
+    "@fastify/swagger-ui": "^4.0.0",
+    "@prisma/client": "^5.16.1",
     "bcryptjs": "^2.4.3",
-    "fastify": "^4.27.0",
+    "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",
-    "fastify-type-provider-zod": "^1.2.0",
+    "fastify-type-provider-zod": "^2.0.0",
+    "mongoose": "^8.4.4",
+    "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.24.0",
+    "wwebjs-mongo": "^1.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -26,10 +30,11 @@
     "@bot/prettier": "workspace:*",
     "@bot/tsconfig": "workspace:*",
     "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.12.12",
+    "@types/node": "^20.14.9",
+    "@types/qrcode-terminal": "^0.12.2",
     "dotenv-cli": "^7.4.2",
-    "prisma": "^5.14.0",
-    "tsx": "^4.11.0"
+    "prisma": "^5.16.1",
+    "tsx": "^4.16.0"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

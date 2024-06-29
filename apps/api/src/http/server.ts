@@ -4,6 +4,8 @@ import fastifyJwt from '@fastify/jwt';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
 import fastify, { FastifyInstance } from 'fastify';
+import WhatsappServices from '@/services/whatsapp-services';
+
 import {
   jsonSchemaTransform,
   serializerCompiler,
@@ -32,6 +34,8 @@ class Server {
     this.registerSwagger();
 
     this.registers();
+
+    this.createConnectionWhatsApp();
   }
 
   private registerSwagger() {
@@ -72,6 +76,11 @@ class Server {
     this.app.register(requestPasswordRecover);
     this.app.register(resetPassword);
     this.app.register(getProfile);
+  }
+
+  private createConnectionWhatsApp() {
+    const clientWhasApp = new WhatsappServices();
+    clientWhasApp.createConnection();
   }
 
   public async start() {

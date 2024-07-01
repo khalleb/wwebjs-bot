@@ -1,23 +1,26 @@
-import { Client, RemoteAuth } from 'whatsapp-web.js';
-import { MongoStore } from 'wwebjs-mongo';
-
-import { connectMongo } from './mongo';
+import { Client, LocalAuth } from 'whatsapp-web.js';
 
 class WhatsappClient {
-  public async connect(): Promise<Client> {
-    const mongoConnection = await connectMongo();
-    const client = new Client({
-      authStrategy: new RemoteAuth({
-        store: new MongoStore({ mongoose: mongoConnection }),
-        backupSyncIntervalMs: 300000,
-      }),
+  private client: Client;
+  constructor() {
+    this.client = new Client({
+      authStrategy: new LocalAuth({ dataPath: '.' }),
       webVersionCache: {
         type: 'remote',
         remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html`,
       },
     });
-    client.initialize();
-    return client;
+
+    this.initialize();
+  }
+
+  private async initialize() {
+    await this.client.initialize();
+    console.log('WhatsApp Client initialized');
+  }
+
+  public getClient(): Client {
+    return this.client;
   }
 }
 

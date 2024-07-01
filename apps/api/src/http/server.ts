@@ -4,14 +4,11 @@ import fastifyJwt from '@fastify/jwt';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
 import fastify, { FastifyInstance } from 'fastify';
-import WhatsappServices from '@/services/whatsapp-services';
+import { jsonSchemaTransform, serializerCompiler, validatorCompiler, ZodTypeProvider } from 'fastify-type-provider-zod';
+import { Server as SocketIOServer, Socket } from 'socket.io';
 
-import {
-  jsonSchemaTransform,
-  serializerCompiler,
-  validatorCompiler,
-  ZodTypeProvider,
-} from 'fastify-type-provider-zod';
+import { AppLogger } from '@/logger';
+import WhatsappServices from '@/services/whatsapp-services';
 
 import { errorHandler } from './error-handler';
 import { authenticateWithPassword } from './routes/auth/authenticate-with-password';
@@ -22,6 +19,7 @@ import { resetPassword } from './routes/auth/reset-password';
 
 class Server {
   public app: FastifyInstance;
+  private io: SocketIOServer;
 
   constructor() {
     this.app = fastify().withTypeProvider<ZodTypeProvider>();
@@ -35,7 +33,15 @@ class Server {
 
     this.registers();
 
-    this.createConnectionWhatsApp();
+    const httpServer = this.app.server;
+    this.io = new SocketIOServer(httpServer, {
+      cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+      },
+    });
+
+    this.socketStart();
   }
 
   private registerSwagger() {
@@ -69,7 +75,9 @@ class Server {
       secret: env.JWT_SECRET,
     });
 
-    this.app.register(fastifyCors);
+    this.app.register(fastifyCors, {
+      origin: '*',
+    });
 
     this.app.register(createAccount);
     this.app.register(authenticateWithPassword);
@@ -78,21 +86,31 @@ class Server {
     this.app.register(getProfile);
   }
 
-  private createConnectionWhatsApp() {
-    const clientWhasApp = new WhatsappServices();
-    clientWhasApp.createConnection();
+  private async startWhatsApp(socket: Socket) {
+    try {
+      new WhatsappServices(socket).start();
+    } catch (error) {
+      AppLogger.error({ message: `Erro ao iniciar o serviço do WhatsApp: ${error}` });
+      process.exit(1);
+    }
+  }
+
+  private socketStart() {
+    this.io.on('connection', (socket) => {
+      AppLogger.info({ message: 'Novo cliente conectado ao socket.' });
+      this.startWhatsApp(socket);
+    });
+    AppLogger.info({ message: 'Socket.io server iniciado.' });
   }
 
   public async start() {
-    this.app
-      .listen({ port: env.SERVER_PORT })
-      .then(() => {
-        console.log('HTTP server running!');
-      })
-      .catch((error) => {
-        console.log(error);
-        process.exit(1);
-      });
+    try {
+      await this.app.listen({ port: env.SERVER_PORT });
+      AppLogger.info({ message: `🚀 Server started on port ${env.SERVER_PORT}` });
+    } catch (error) {
+      AppLogger.error({ message: `'Erro ao iniciar o servidor: ${error}` });
+      process.exit(1);
+    }
   }
 }
 

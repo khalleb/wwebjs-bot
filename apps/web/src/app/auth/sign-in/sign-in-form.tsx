@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useFormState } from '@/hooks/use-form-state'
+import { connectSocket } from '@/lib/socket'
 
 import { signInWithEmailAndPassword } from './actions'
 
@@ -18,6 +19,11 @@ export function SignInForm() {
   const [{ errors, message, success }, handleSubmit, isPending] = useFormState(
     signInWithEmailAndPassword,
     () => {
+      const socket = connectSocket()
+      socket.on('connect', () => {
+        console.log('SOCKET Conectado ao servidor')
+      })
+
       router.push('/')
     },
   )

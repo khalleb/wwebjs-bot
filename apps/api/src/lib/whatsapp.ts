@@ -1,14 +1,13 @@
-import { Client, LocalAuth } from 'whatsapp-web.js';
+import { Client, RemoteAuth } from 'whatsapp-web.js';
+
+import StoreWhatsApp from './store-whatsapp';
 
 class WhatsappClient {
   private client: Client;
   constructor() {
+    const store = new StoreWhatsApp();
     this.client = new Client({
-      authStrategy: new LocalAuth({ dataPath: '.' }),
-      webVersionCache: {
-        type: 'remote',
-        remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html`,
-      },
+      authStrategy: new RemoteAuth({ store, backupSyncIntervalMs: 60000 * 5 }),
     });
 
     this.initialize();

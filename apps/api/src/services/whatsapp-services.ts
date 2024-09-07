@@ -1,16 +1,13 @@
 import qrcode from 'qrcode-terminal';
-import { Socket } from 'socket.io';
 
 import WhatsappClient from '@/lib/whatsapp';
 import { AppLogger } from '@/logger';
 
 class WhatsappServices {
   private whatsappClient: WhatsappClient;
-  private socket: Socket;
 
-  constructor(socket: Socket) {
+  constructor() {
     this.whatsappClient = new WhatsappClient();
-    this.socket = socket;
   }
 
   public start() {
@@ -19,12 +16,13 @@ class WhatsappServices {
       const client = this.whatsappClient.getClient();
 
       client.on('qr', (qrCode: string) => {
-        this.socket.emit('qr', qrCode);
+        console.log(`------------------------------------------`);
+
         qrcode.generate(qrCode, { small: true });
         console.log('Escaneie o código QR acima para fazer login no WhatsApp.');
       });
 
-      client.on('authenticated', (session) => {
+      client.on('authenticated', () => {
         console.log('WhatsApp Client authenticated');
         // Salvar informações da sessão, se necessário
       });

@@ -11,7 +11,9 @@ const connectSocket = (): Socket => {
   if (!socket) {
     try {
       socket = io(SERVER_URL)
-      console.log('Socket conectado:', socket.id)
+      console.info('------------------------')
+      console.info('Socket conectado:', socket.id)
+      console.info('------------------------')
     } catch (error) {
       console.error('Erro ao conectar ao socket:', error)
       throw error // Opcional: Repassar o erro para o chamador lidar

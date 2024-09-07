@@ -7,8 +7,6 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
 
     JWT_SECRET: z.string(),
-
-    MONGODB_URI: z.string(),
   },
   client: {},
   shared: {
@@ -18,7 +16,6 @@ export const env = createEnv({
     SERVER_PORT: process.env.SERVER_PORT,
     DATABASE_URL: process.env.DATABASE_URL,
     JWT_SECRET: process.env.JWT_SECRET,
-    MONGODB_URI: process.env.MONGODB_URI,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
   emptyStringAsUndefined: true,

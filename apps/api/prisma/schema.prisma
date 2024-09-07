@@ -39,3 +39,11 @@ model Token {
 
   @@map("tokens")
 }
+
+model SessionWhatsApp {
+  id      String @id @default(uuid())
+  session String @unique
+  files   Bytes
+
+  @@map("session-whatsapp")
+}
